@@ -10,7 +10,7 @@ unsigned char code LedChar[] = {
 	0x80, 0x90, 0x88, 0x83, 0xC6, 0xA1, 0x86, 0x8E};
 unsigned char code LedCom[] = {0x01, 0x02, 0x04};
 
-void LED_Disp(uint8_t NUM, uint8_t Bit)
+void LED_Disp(int NUM, unsigned char Bit)
 {
 
 	P06 = ~LedChar[NUM] & 0x01;

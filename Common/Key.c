@@ -7,17 +7,31 @@
 #include "N76E003.h"
 #include "Key.h"
 #include "Menu.h"
+
+unsigned char MainMenu_Flag, SubMenu_Flag, SpeMenu_Flag;
+unsigned char OverTimeCount;
+unsigned char Key_Set, Key_Up, Key_Down;				//按键变量;
+unsigned char Key_Long_Set, Key_Long_Up, Key_Long_Down; //按键变量;
+unsigned int KeyTimeCount;								//按键计时变量;
+unsigned char FirstPushSetFlag;
+unsigned char KeyTimer;
 void Key_Scan(void)
 {
-	if (K_Set == 1) //按键首次按下;
+	if (K_Set == 0) //按键首次按下;
 	{
-		KeyTimer++;									   //按键首次按下，按键计数器累加;
-		if ((KeyTimer >= 20) && (KeyTimeCount <= 500)) //如果按键计数器超时(去抖)且按键状态仍然为1,则按键时长计数器开始累计;
+		KeyTimer++;										 //按键首次按下，按键计数器累加;
+		if ((KeyTimer >= 60) && (KeyTimeCount <= 100)) //如果按键计数器超时(去抖)且按键状态仍然为1,则按键时长计数器开始累计;
 		{
+			if (20 <= KeyTimeCount)
+			{
+				Key_Long_Set = 1;
+				KeyTimeCount = 0;
+			}
+
 			KeyTimeCount++;
 		}
 	}
-	else if (KeyTimer >= 20) //按键释放,则按键标志变为1同时清空按键定时器和按键时长计数;
+	else if (KeyTimer >= 10) //按键释放,则按键标志变为1同时清空按键定时器和按键时长计数;
 	{
 		Key_Set = 1;	  //按键位置1;
 		KeyTimer = 0;	  //按键计数器清零;
@@ -34,7 +48,7 @@ void Key_Service(void)
 	if (MainMenu_Flag != 99) //MainMenu_Flag==99表明处于二级菜单，默认进入一级菜单刷新显示当前温度;
 		switch (MainMenu_Flag)
 		{
-		case 0:							 //显示主画面，即当前温度值;
+		case 0: //显示主画面，即当前温度值;
 			// Disp_Temp_Default();		 //显示:Main_Temp;
 			if (KeyTimeCount >= KtCount) //长按设置按键3s后进入主菜单。
 			{
@@ -55,7 +69,7 @@ void Key_Service(void)
 				Key_Down = 0;
 			}
 			break;
-		case 1:							  //P0,工作模式选择,C:制冷,H:制热(default)
+		case 1: //P0,工作模式选择,C:制冷,H:制热(default)
 			// Disp_Menu(00);				  //显示:P00
 			if (OverTimeCount >= OtCount) //超时退出菜单;
 			{
@@ -88,7 +102,7 @@ void Key_Service(void)
 				Key_Down = 0;
 			}
 			break;
-		case 2:							  //P1:温度回差;
+		case 2: //P1:温度回差;
 			// Disp_Menu(01);				  //显示:P01;
 			if (OverTimeCount >= OtCount) //超时退出菜单;
 			{
@@ -143,7 +157,7 @@ void Key_Service(void)
 	else
 		switch (SubMenu_Flag)
 		{
-		case 0:							  //调节温控点;
+		case 0: //调节温控点;
 			// Disp_Set_Temp();			  //显示温度设定值;
 			if (OverTimeCount >= OtCount) //超时退出菜单不保存;
 			{
@@ -176,7 +190,7 @@ void Key_Service(void)
 			}
 			/* code */
 			break;
-		case 1:							 //调整模式;
+		case 1: //调整模式;
 			// Disp_Set_Run_Mode();		 //显示运行模式C/H;
 			if (OverTimeCount > OtCount) //超时退出菜单不保存;
 			{
@@ -209,7 +223,7 @@ void Key_Service(void)
 				Key_Down = 0;
 			}
 			break;
-		case 2:							 //调整回差;
+		case 2: //调整回差;
 			// Disp_Return_Heating();		 //显示回差数值(范围0.1~15℃);
 			if (OverTimeCount > OtCount) //超时退出菜单不保存;
 			{

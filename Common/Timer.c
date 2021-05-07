@@ -7,6 +7,10 @@
 #include "N76E003.h"
 #include "Timer.h"
 #include "Menu.h"
+#include "Key.h"
+
+unsigned int TimerCount;
+unsigned int KeyTime; //按键定时器,用来计时按键消抖;
 
 void Timer_init(void)
 {
@@ -20,13 +24,14 @@ void Timer_init(void)
 
 void	Timer3(void)	interrupt	16	//定时器3中断
 {
-	// Key_Scan(); //按键扫描;
+	
 	// Disp_Menu_0(); //数码管刷屏;
 	TimerCount++;
-	if(TimerCount==50)
+	if(TimerCount==15)
 	{
 		//1s定时处理;
 		// Blink();//
+		Key_Scan();		//按键扫描;
 		TimerCount = 0; //计数器清零;
 	}
 }

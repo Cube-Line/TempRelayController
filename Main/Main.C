@@ -19,6 +19,9 @@
 #include "Common.h"
 #include "Delay.h"
 #include "Segment_Led_Display.h"
+#include "Key.h"
+#include "Timer.h"
+#include "Menu.h"
 
 //*****************  The Following is in define in Fucntion_define.h  ***************************
 //****** Always include Function_define.h call the define you want, detail see main(void) *******
@@ -37,6 +40,7 @@ void main(void)
 	//	unsigned char temp;
 	Set_All_GPIO_Quasi_Mode; // Define in Function_define.h
 	// Set_ALL_GPIO_PushPull_Mode;
+	Timer_init();
 	while (1)
 	{
 		// clr_GPIO1;
@@ -70,13 +74,34 @@ void main(void)
 		// P13 = 0x01;
 		// Timer0_Delay1ms(100);
 		// }
-		for (_num = 0; _num <= 15; _num++)
+		if (_num <= 10)
 		{
-			LED_Disp(_num, 0);
-			Timer0_Delay1ms(1000);
+			if (1 == Key_Set)
+			{
+
+				_num += 1;
+				Key_Set = 0;
+			}
+			else
+			{
+
+				if (1 == Key_Long_Set)
+				{
+					_num += 1;
+					Key_Long_Set = 0;
+				}
+			}
 		}
+		else
+			_num = 0;
+		Disp_Temp(289);
+		// LED_Disp(3, 0);
+		// Timer0_Delay1ms(1);
+		// LED_Disp(3, 1);
+		// Timer0_Delay1ms(1);
+		// LED_Disp(3, 2);
 		// LED_Close();
-		// Timer0_Delay1ms(1000);
+		// Timer0_Delay1ms(1);
 	}
 	//#endif
 }
